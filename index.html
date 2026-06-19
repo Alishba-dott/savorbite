@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SavorBite | Modern Dining Experience</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        amber: { 500: '#f59e0b', 600: '#d97706', 700: '#b45309' },
+                        zinc: { 800: '#27272a', 900: '#18181b', 950: '#09090b' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Loading Screen Animation */
+        #loader { transition: opacity 0.6s ease-out, visibility 0.6s ease-out; }
+        .spinner { border: 4px solid rgba(217, 119, 6, 0.2); border-left-color: #d97706; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Scroll Reveal Animations */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* Hide scrollbar for category tabs */
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-stone-50 dark:bg-zinc-950 text-zinc-800 dark:text-stone-200 font-sans antialiased selection:bg-amber-500/30 transition-colors duration-300 relative">
+
+    <div id="loader" class="fixed inset-0 z-[100] bg-stone-50 dark:bg-zinc-950 flex flex-col items-center justify-center">
+        <div class="spinner mb-4"></div>
+        <p class="text-amber-600 font-bold tracking-widest uppercase text-sm animate-pulse">Preparing Kitchen...</p>
+    </div>
+
+    <header class="bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md shadow-sm sticky top-0 z-50 transition-all duration-300 border-b border-stone-200 dark:border-zinc-800">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer transition-transform hover:scale-105" onclick="window.scrollTo(0,0)">
+                    <span class="text-2xl font-extrabold tracking-tight text-amber-600">SAVOR<span class="text-zinc-900 dark:text-white">BITE</span></span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-sm font-semibold text-amber-600 hover:text-amber-500 transition-colors">Home</a>
+                    <a href="#menu" class="text-sm font-medium text-zinc-600 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 transition-colors">Menu</a>
+                    <a href="#about" class="text-sm font-medium text-zinc-600 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 transition-colors">About</a>
+                    <a href="#featured" class="text-sm font-medium text-zinc-600 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 transition-colors">Featured</a>
+                    <a href="#contact" class="text-sm font-medium text-zinc-600 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 transition-colors">Contact</a>
+                    
+                    <button id="theme-toggle" aria-label="Toggle Dark Mode" class="p-2 rounded-full bg-stone-100 dark:bg-zinc-800 text-zinc-600 dark:text-stone-300 hover:text-amber-600 transition-colors">
+                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    </button>
+                    
+                    <a href="#contact" class="bg-zinc-900 dark:bg-amber-600 text-white text-xs font-bold px-6 py-2.5 rounded-full hover:bg-zinc-800 dark:hover:bg-amber-500 transition shadow-sm">Reserve</a>
+                </div>
+
+                <div class="md:hidden flex items-center gap-4">
+                    <button id="theme-toggle-mobile" aria-label="Toggle Dark Mode" class="p-2 rounded-full bg-stone-100 dark:bg-zinc-800 text-zinc-600 dark:text-stone-300">
+                        <svg id="theme-toggle-dark-icon-mobile" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                        <svg id="theme-toggle-light-icon-mobile" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <button id="menu-toggle-btn" class="text-zinc-900 dark:text-white focus:outline-none" aria-label="Toggle Menu">
+                        <svg id="hamburger-icon" class="h-6 w-6 block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        <svg id="close-icon" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div id="mobile-dropdown" class="hidden md:hidden bg-white dark:bg-zinc-900 border-t border-stone-100 dark:border-zinc-800 shadow-xl py-4 space-y-1">
+            <a href="#home" class="mobile-link block px-6 py-3 font-medium text-amber-600 bg-amber-50/50 dark:bg-amber-900/20">Home</a>
+            <a href="#menu" class="mobile-link block px-6 py-3 font-medium text-zinc-600 dark:text-stone-300 hover:text-amber-600">Menu</a>
+            <a href="#about" class="mobile-link block px-6 py-3 font-medium text-zinc-600 dark:text-stone-300 hover:text-amber-600">About Us</a>
+            <a href="#featured" class="mobile-link block px-6 py-3 font-medium text-zinc-600 dark:text-stone-300 hover:text-amber-600">Featured</a>
+            <a href="#contact" class="mobile-link block px-6 py-3 font-medium text-zinc-600 dark:text-stone-300 hover:text-amber-600">Contact Us</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="relative h-[85vh] flex items-center justify-center bg-zinc-900 text-white px-4 overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-40 bg-cover bg-center scale-105 transition-transform duration-[10000ms]" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="relative z-10 text-center max-w-3xl mx-auto space-y-6 reveal">
+                <span class="inline-block bg-white/10 backdrop-blur-md text-amber-400 text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full border border-white/20 shadow-sm">
+                    Welcome to SavorBite
+                </span>
+                <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-tight text-white drop-shadow-lg">
+                    Crafting Unforgettable Culinary Journeys
+                </h1>
+                <p class="text-base sm:text-xl text-stone-200 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md">
+                    Experience the fine balance of locally cultivated premium ingredients combined with cutting-edge gastronomic design.
+                </p>
+                <div class="pt-6">
+                    <a href="#menu" class="inline-block bg-amber-600 text-white font-bold tracking-wide text-sm px-8 py-4 rounded-full shadow-xl hover:bg-amber-500 hover:shadow-amber-500/30 transition-all transform hover:-translate-y-1 duration-300">
+                        Explore Our Menu
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="menu" class="py-24 bg-white dark:bg-zinc-950 border-b border-stone-200 dark:border-zinc-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-xl mx-auto mb-12 space-y-4 reveal">
+                    <h2 class="text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight sm:text-4xl">Discover Our Menu</h2>
+                    <div class="h-1 w-16 bg-amber-600 mx-auto rounded-full"></div>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm">Filter by category or search instantly for your favorite delicacy.</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12 pb-6 border-b border-stone-200 dark:border-zinc-800 reveal">
+                    <div class="relative max-w-md w-full group">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400 dark:text-stone-500 group-focus-within:text-amber-500 transition-colors">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </span>
+                        <input type="text" id="menu-search" placeholder="Search dishes, ingredients..." class="w-full pl-12 pr-4 py-3 bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 transition-all text-zinc-900 dark:text-white placeholder-stone-400 dark:placeholder-stone-500 shadow-inner">
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 items-center overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+                        <button onclick="filterCategory('all')" class="category-btn active px-6 py-2.5 rounded-full text-xs font-bold tracking-wide uppercase transition-all bg-zinc-900 dark:bg-amber-600 text-white shadow-md transform active:scale-95">All Items</button>
+                        <button onclick="filterCategory('fast-food')" class="category-btn px-6 py-2.5 rounded-full text-xs font-bold tracking-wide uppercase transition-all bg-stone-100 dark:bg-zinc-800 text-zinc-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-zinc-700 transform active:scale-95">Fast Food</button>
+                        <button onclick="filterCategory('bbq')" class="category-btn px-6 py-2.5 rounded-full text-xs font-bold tracking-wide uppercase transition-all bg-stone-100 dark:bg-zinc-800 text-zinc-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-zinc-700 transform active:scale-95">BBQ</button>
+                        <button onclick="filterCategory('pizza')" class="category-btn px-6 py-2.5 rounded-full text-xs font-bold tracking-wide uppercase transition-all bg-stone-100 dark:bg-zinc-800 text-zinc-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-zinc-700 transform active:scale-95">Pizza</button>
+                        <button onclick="filterCategory('burgers')" class="category-btn px-6 py-2.5 rounded-full text-xs font-bold tracking-wide uppercase transition-all bg-stone-100 dark:bg-zinc-800 text-zinc-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-zinc-700 transform active:scale-95">Burgers</button>
+                        <button onclick="filterCategory('desserts')" class="category-btn px-6 py-2.5 rounded-full text-xs font-bold tracking-wide uppercase transition-all bg-stone-100 dark:bg-zinc-800 text-zinc-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-zinc-700 transform active:scale-95">Desserts</button>
+                    </div>
+                </div>
+
+                <div id="menu-grid" class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 reveal">
+                    <article class="menu-card bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-stone-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group" data-category="fast-food">
+                        <div class="h-56 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=600&q=80" alt="Crispy Chicken Tenders" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div class="p-6 space-y-3">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-lg font-bold text-zinc-900 dark:text-white card-title leading-tight">Crispy Chicken Tenders</h3>
+                                <span class="text-lg font-extrabold text-amber-600">$12.50</span>
+                            </div>
+                            <p class="text-stone-500 dark:text-stone-400 text-sm leading-relaxed line-clamp-2 card-desc">Hand-battered premium buttermilk chicken strips fried golden brown, paired with house honey mustard.</p>
+                            <span class="inline-block bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-md border border-amber-200 dark:border-amber-500/20">Fast Food</span>
+                        </div>
+                    </article>
+
+                    <article class="menu-card bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-stone-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group" data-category="bbq">
+                        <div class="h-56 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80" alt="Slow-Smoked Brisket" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div class="p-6 space-y-3">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-lg font-bold text-zinc-900 dark:text-white card-title leading-tight">Slow-Smoked Brisket</h3>
+                                <span class="text-lg font-extrabold text-amber-600">$24.00</span>
+                            </div>
+                            <p class="text-stone-500 dark:text-stone-400 text-sm leading-relaxed line-clamp-2 card-desc">Premium cut wood-fired brisket, smoked over hickory wood for fourteen continuous hours and basted with craft BBQ sauce.</p>
+                            <span class="inline-block bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-md border border-amber-200 dark:border-amber-500/20">BBQ</span>
+                        </div>
+                    </article>
+
+                    <article class="menu-card bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-stone-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group" data-category="pizza">
+                        <div class="h-56 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80" alt="White Truffle Pizza" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div class="p-6 space-y-3">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-lg font-bold text-zinc-900 dark:text-white card-title leading-tight">White Truffle Pizza</h3>
+                                <span class="text-lg font-extrabold text-amber-600">$19.50</span>
+                            </div>
+                            <p class="text-stone-500 dark:text-stone-400 text-sm leading-relaxed line-clamp-2 card-desc">Wild seasonal mushrooms, cold-pressed white truffle glaze, hand-stretched sourdough crust, and buffalo mozzarella.</p>
+                            <span class="inline-block bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-md border border-amber-200 dark:border-amber-500/20">Pizza</span>
+                        </div>
+                    </article>
+
+                    <article class="menu-card bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-stone-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group" data-category="burgers">
+                        <div class="h-56 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80" alt="Savor Signature Burger" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div class="p-6 space-y-3">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-lg font-bold text-zinc-900 dark:text-white card-title leading-tight">Savor Signature Burger</h3>
+                                <span class="text-lg font-extrabold text-amber-600">$16.00</span>
+                            </div>
+                            <p class="text-stone-500 dark:text-stone-400 text-sm leading-relaxed line-clamp-2 card-desc">Prime dry-aged Angus beef patty, melted cheddar cheese, caramelized onions, and secret spread inside a brioche bun.</p>
+                            <span class="inline-block bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-md border border-amber-200 dark:border-amber-500/20">Burgers</span>
+                        </div>
+                    </article>
+
+                    <article class="menu-card bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-stone-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group" data-category="desserts">
+                        <div class="h-56 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80" alt="Molten Lava Cake" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <div class="p-6 space-y-3">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-lg font-bold text-zinc-900 dark:text-white card-title leading-tight">Molten Lava Cake</h3>
+                                <span class="text-lg font-extrabold text-amber-600">$11.00</span>
+                            </div>
+                            <p class="text-stone-500 dark:text-stone-400 text-sm leading-relaxed line-clamp-2 card-desc">Decadent Venezuelan dark chocolate cake with a rich fluid hot chocolate center, balanced with vanilla bean gelato.</p>
+                            <span class="inline-block bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-md border border-amber-200 dark:border-amber-500/20">Desserts</span>
+                        </div>
+                    </article>
+                </div>
+
+                <div id="no-results" class="hidden text-center py-16 text-stone-500 dark:text-stone-400">
+                    <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <p class="text-lg font-medium">No menu items found.</p>
+                    <p class="text-sm">Try adjusting your search or category filters.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-24 bg-stone-50 dark:bg-zinc-900 border-b border-stone-200 dark:border-zinc-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
+                
+                <div class="grid lg:grid-cols-2 gap-12 items-center reveal">
+                    <div class="space-y-6">
+                        <span class="text-xs font-bold tracking-widest text-amber-600 uppercase">Our Heritage</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+                            Where Passion Meets Perfection
+                        </h2>
+                        <div class="h-1 w-16 bg-amber-600 rounded-full"></div>
+                        <p class="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-light">
+                            Welcome to SavorBite, a culinary sanctuary where hospitality meets fine-dining artistry. Our team is fully committed to turning simple meals into deep sensory memories. We design our environments so that they instantly cultivate comfort and bring families together.
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="h-64 rounded-2xl overflow-hidden shadow-lg border border-stone-200 dark:border-zinc-800">
+                            <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=400&q=80" alt="Kitchen Prep" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="h-64 rounded-2xl overflow-hidden shadow-lg border border-stone-200 dark:border-zinc-800 mt-8">
+                            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=400&q=80" alt="Plating" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-8 reveal">
+                    <div class="bg-white dark:bg-zinc-950 p-8 rounded-2xl border border-stone-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="text-3xl mb-4">🎯</div>
+                        <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-3">Our Mission</h3>
+                        <p class="text-stone-500 dark:text-stone-400 text-sm leading-relaxed font-light">To cultivate an inclusive and memorable culinary retreat that honors fresh regional harvests, protects local farming communities, and sets pristine service benchmarks.</p>
+                    </div>
+                    <div class="bg-white dark:bg-zinc-950 p-8 rounded-2xl border border-stone-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="text-3xl mb-4">✨</div>
+                        <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-3">Our Vision</h3>
+                        <p class="text-stone-500 dark:text-stone-400 text-sm leading-relaxed font-light">To redefine modern gathering spaces through ecological food preparation networks, proving that sustainable organic choices perfectly mirror absolute excellence.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 bg-zinc-900 dark:bg-black text-white p-8 sm:p-12 rounded-3xl shadow-xl reveal border border-zinc-800">
+                    <div class="text-center space-y-2">
+                        <span class="block text-4xl font-extrabold text-amber-500">12+</span>
+                        <span class="block text-stone-400 text-[11px] font-bold tracking-widest uppercase">Years Active</span>
+                    </div>
+                    <div class="text-center space-y-2 border-l border-white/10">
+                        <span class="block text-4xl font-extrabold text-amber-500">85K+</span>
+                        <span class="block text-stone-400 text-[11px] font-bold tracking-widest uppercase">Guests Served</span>
+                    </div>
+                    <div class="text-center space-y-2 border-l border-white/10">
+                        <span class="block text-4xl font-extrabold text-amber-500">24+</span>
+                        <span class="block text-stone-400 text-[11px] font-bold tracking-widest uppercase">Master Chefs</span>
+                    </div>
+                    <div class="text-center space-y-2 border-l border-white/10">
+                        <span class="block text-4xl font-extrabold text-amber-500">99%</span>
+                        <span class="block text-stone-400 text-[11px] font-bold tracking-widest uppercase">Happy Reviews</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-24 bg-white dark:bg-zinc-950 border-t border-stone-200 dark:border-zinc-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-xl mx-auto mb-16 space-y-4 reveal">
+                    <h2 class="text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight sm:text-4xl">Get In Touch</h2>
+                    <div class="h-1 w-16 bg-amber-600 mx-auto rounded-full"></div>
+                    <p class="text-stone-500 dark:text-stone-400 text-sm">Have a question or want to secure a private reservation? Reach out to us.</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-12 items-start reveal">
+                    
+                    <div class="space-y-8">
+                        <div class="grid sm:grid-cols-2 gap-6">
+                            <div class="bg-stone-50 dark:bg-zinc-900 p-8 rounded-2xl border border-stone-200 dark:border-zinc-800 shadow-sm transition hover:shadow-md">
+                                <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-500 rounded-xl flex items-center justify-center mb-5">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                </div>
+                                <h4 class="text-base font-bold text-zinc-900 dark:text-white mb-2">Location</h4>
+                                <p class="text-stone-500 dark:text-stone-400 text-sm leading-relaxed">742 Culinary District,<br>Suite 10, NY 10001</p>
+                            </div>
+                            
+                            <div class="bg-stone-50 dark:bg-zinc-900 p-8 rounded-2xl border border-stone-200 dark:border-zinc-800 shadow-sm transition hover:shadow-md">
+                                <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-500 rounded-xl flex items-center justify-center mb-5">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <h4 class="text-base font-bold text-zinc-900 dark:text-white mb-2">Contact Details</h4>
+                                <p class="text-stone-500 dark:text-stone-400 text-sm leading-relaxed space-y-1">
+                                    <span class="block">P: +1 (555) 019-8834</span>
+                                    <span class="block">E: dine@savorbite.com</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="h-[250px] rounded-2xl overflow-hidden shadow-sm border border-stone-200 dark:border-zinc-800">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830869428!2d-74.119763973046!3d40.69766374874431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY!5e0!3m2!1sen!2sus!4v1680000000000!5m2!1sen!2sus" width="100%" height="100%" style="border:0; filter: grayscale(50%) contrast(1.2);" allowfullscreen="" loading="lazy"></iframe>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-zinc-900 p-8 sm:p-10 rounded-3xl border border-stone-200 dark:border-zinc-800 shadow-xl shadow-stone-200/50 dark:shadow-none">
+                        <form id="contact-form" class="space-y-6" novalidate>
+                            
+                            <div id="form-success" class="hidden p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-sm font-medium transition-all duration-300 flex items-start gap-3">
+                                <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>Thank you! Your message has been sent successfully. We will confirm shortly.</span>
+                            </div>
+                            
+                            <div class="grid sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="name" class="block text-xs font-bold text-zinc-700 dark:text-stone-300 uppercase tracking-wider mb-2">Full Name</label>
+                                    <input type="text" id="name" class="w-full px-4 py-3.5 bg-stone-50 dark:bg-zinc-950 border border-stone-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all text-zinc-900 dark:text-white" placeholder="John Doe">
+                                    <span class="error-msg text-red-500 dark:text-red-400 text-[11px] font-bold hidden mt-1.5">Name is required.</span>
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-xs font-bold text-zinc-700 dark:text-stone-300 uppercase tracking-wider mb-2">Email Address</label>
+                                    <input type="email" id="email" class="w-full px-4 py-3.5 bg-stone-50 dark:bg-zinc-950 border border-stone-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all text-zinc-900 dark:text-white" placeholder="john@example.com">
+                                    <span class="error-msg text-red-500 dark:text-red-400 text-[11px] font-bold hidden mt-1.5">Valid email is required.</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="subject" class="block text-xs font-bold text-zinc-700 dark:text-stone-300 uppercase tracking-wider mb-2">Subject</label>
+                                <input type="text" id="subject" class="w-full px-4 py-3.5 bg-stone-50 dark:bg-zinc-950 border border-stone-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all text-zinc-900 dark:text-white" placeholder="Table Reservation">
+                                <span class="error-msg text-red-500 dark:text-red-400 text-[11px] font-bold hidden mt-1.5">Subject is required.</span>
+                            </div>
+                            <div>
+                                <label for="message" class="block text-xs font-bold text-zinc-700 dark:text-stone-300 uppercase tracking-wider mb-2">Your Message</label>
+                                <textarea id="message" rows="5" class="w-full px-4 py-3.5 bg-stone-50 dark:bg-zinc-950 border border-stone-200 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all resize-none text-zinc-900 dark:text-white" placeholder="How can we help?"></textarea>
+                                <span class="error-msg text-red-500 dark:text-red-400 text-[11px] font-bold hidden mt-1.5">Message is required.</span>
+                            </div>
+                            <button type="submit" class="w-full bg-zinc-900 dark:bg-amber-600 text-white font-bold text-sm tracking-wide px-8 py-4 rounded-xl shadow-lg hover:bg-amber-600 dark:hover:bg-amber-500 transition-colors duration-300 active:scale-95 transform">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-zinc-950 text-stone-400 border-t border-zinc-900 pt-16 pb-8 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 pb-12 border-b border-zinc-800/50">
+            <div class="space-y-4">
+                <span class="text-xl font-black tracking-tight text-white">SAVOR<span class="text-amber-500">BITE</span></span>
+                <p class="leading-relaxed font-light">Crafting uncompromised premium hospitality settings and world-class gastronomic culinary events across viewports.</p>
+            </div>
+            <div class="space-y-3">
+                <h4 class="text-white font-bold text-sm tracking-wide">Hours</h4>
+                <ul class="space-y-2 font-light">
+                    <li>Mon-Thu: 11:00 AM – 10:00 PM</li>
+                    <li>Fri-Sun: 10:00 AM – 11:30 PM</li>
+                </ul>
+            </div>
+            <div class="space-y-3">
+                <h4 class="text-white font-bold text-sm tracking-wide">Location</h4>
+                <ul class="space-y-2 font-light">
+                    <li>742 Culinary District, NY</li>
+                    <li>+1 (555) 019-8834</li>
+                </ul>
+            </div>
+            <div class="space-y-3">
+                <h4 class="text-white font-bold text-sm tracking-wide">Social</h4>
+                <div class="flex space-x-4 pt-1">
+                    <a href="#" class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white hover:bg-amber-600 transition">FB</a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white hover:bg-amber-600 transition">IG</a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white hover:bg-amber-600 transition">TW</a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 text-center text-stone-500 font-light">
+            <p>© 2026 SAVORBITE Hospitality. Premium Evaluation Build.</p>
+        </div>
+    </footer>
+
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-amber-600 text-white p-3 rounded-full shadow-xl opacity-0 pointer-events-none transform translate-y-10 transition-all duration-300 hover:bg-amber-500 hover:-translate-y-1 z-50 focus:outline-none focus:ring-4 focus:ring-amber-500/30" aria-label="Back to Top">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+    </button>
+
+    <script>
+        // 1. Loading Screen Logic
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 600);
+            }, 800); // Artificial delay to show off the loader animation beautifully
+        });
+
+        // 2. Scroll Animation Observer (Bonus Feature)
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target); // Run once
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // 3. Dark Mode Toggle (Bonus Feature)
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleBtnMobile = document.getElementById('theme-toggle-mobile');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+        const darkIconMobile = document.getElementById('theme-toggle-dark-icon-mobile');
+        const lightIconMobile = document.getElementById('theme-toggle-light-icon-mobile');
+
+        // Check local storage or system preference
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            lightIcon.classList.remove('hidden');
+            lightIconMobile.classList.remove('hidden');
+        } else {
+            darkIcon.classList.remove('hidden');
+            darkIconMobile.classList.remove('hidden');
+        }
+
+        function toggleTheme() {
+            darkIcon.classList.toggle('hidden');
+            lightIcon.classList.toggle('hidden');
+            darkIconMobile.classList.toggle('hidden');
+            lightIconMobile.classList.toggle('hidden');
+
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
+        }
+        themeToggleBtn.addEventListener('click', toggleTheme);
+        themeToggleBtnMobile.addEventListener('click', toggleTheme);
+
+        // 4. Back To Top Button Logic (Bonus Feature)
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                backToTopBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-10');
+                backToTopBtn.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                backToTopBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-10');
+                backToTopBtn.classList.remove('opacity-100', 'translate-y-0');
+            }
+        });
+        backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // 5. Mobile Nav Toggle
+        const menuBtn = document.getElementById('menu-toggle-btn');
+        const mobileNav = document.getElementById('mobile-dropdown');
+        const hamburger = document.getElementById('hamburger-icon');
+        const closeIconSvg = document.getElementById('close-icon');
+
+        function toggleMobileMenu() {
+            mobileNav.classList.toggle('hidden');
+            hamburger.classList.toggle('hidden');
+            closeIconSvg.classList.toggle('hidden');
+        }
+        menuBtn.addEventListener('click', toggleMobileMenu);
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+
+        // 6. Menu Filter & Search Logic
+        let activeCategory = 'all';
+        const searchInput = document.getElementById('menu-search');
+
+        function filterCategory(category) {
+            activeCategory = category;
+            const buttons = document.querySelectorAll('.category-btn');
+            
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-zinc-900', 'dark:bg-amber-600', 'text-white', 'shadow-md');
+                btn.classList.add('bg-stone-100', 'dark:bg-zinc-800', 'text-zinc-600', 'dark:text-stone-300');
+            });
+
+            const eventTarget = window.event ? window.event.target : null;
+            if (eventTarget && eventTarget.classList.contains('category-btn')) {
+                eventTarget.classList.remove('bg-stone-100', 'dark:bg-zinc-800', 'text-zinc-600', 'dark:text-stone-300');
+                eventTarget.classList.add('bg-zinc-900', 'dark:bg-amber-600', 'text-white', 'shadow-md');
+            }
+            executeCombinedFilters();
+        }
+
+        if(searchInput) searchInput.addEventListener('input', executeCombinedFilters);
+
+        function executeCombinedFilters() {
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const cards = document.querySelectorAll('.menu-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const description = card.querySelector('.card-desc').textContent.toLowerCase();
+
+                const matchesCategory = (activeCategory === 'all' || cardCategory === activeCategory);
+                const matchesSearch = (title.includes(query) || description.includes(query));
+
+                if (matchesCategory && matchesSearch) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const emptyState = document.getElementById('no-results');
+            if (visibleCount === 0) emptyState.classList.remove('hidden');
+            else emptyState.classList.add('hidden');
+        }
+
+        // 7. Contact Form Validation Logic
+        const contactForm = document.getElementById('contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+                
+                const fields = ['name', 'email', 'subject', 'message'];
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                fields.forEach(id => {
+                    const el = document.getElementById(id);
+                    const errorSpan = el.nextElementSibling;
+                    let fieldValid = true;
+
+                    if (el.value.trim() === '') fieldValid = false;
+                    if (id === 'email' && !emailRegex.test(el.value.trim())) fieldValid = false;
+
+                    if (!fieldValid) {
+                        el.classList.add('border-red-500', 'dark:border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                        el.classList.remove('border-stone-200', 'dark:border-zinc-700', 'focus:border-amber-500');
+                        errorSpan.classList.remove('hidden');
+                        isValid = false;
+                    } else {
+                        el.classList.remove('border-red-500', 'dark:border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+                        el.classList.add('border-stone-200', 'dark:border-zinc-700', 'focus:border-amber-500');
+                        errorSpan.classList.add('hidden');
+                    }
+                });
+
+                if (isValid) {
+                    const successMsg = document.getElementById('form-success');
+                    successMsg.classList.remove('hidden');
+                    contactForm.reset();
+                    setTimeout(() => successMsg.classList.add('hidden'), 5000);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
